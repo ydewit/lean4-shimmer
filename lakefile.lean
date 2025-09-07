@@ -71,9 +71,22 @@ This helper funtion is used to build `shim.c.o` files from
       inputTextFile cFile
     else
       fetch (mod.facet `shim.c)
-  let weakArgs := #["-I", (← getLeanIncludeDir).toString] ++ mod.weakLeancArgs
+
+  let mut weakArgs := #["-I", (← getLeanIncludeDir).toString]
+  weakArgs := weakArgs ++ #["-I", mod.pkg.srcDir.toString]
+  weakArgs := weakArgs ++ mod.weakLeancArgs
+
   let leancArgs := if shouldExport then mod.leancArgs.push "-DLEAN_EXPORTING" else mod.leancArgs
   buildO oFile cJob weakArgs leancArgs
 
+/--
+These two `module_facet`s enables other Lean projects to compile the `shim.c` files.
+
+To use them, you can add the following lines to your `lakefile.lean`:
+```
+module_data oShimExportFacet : FilePath
+module_data oShimNoExportFacet : FilePath
+```
+-/
 module_facet oShimExportFacet mod : FilePath := buildShimO mod true
 module_facet oShimNoExportFacet mod : FilePath := buildShimO mod false
