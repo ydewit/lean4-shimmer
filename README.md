@@ -11,15 +11,31 @@
 
 ## Usage
 
-```sh
-lake build
-./build/bin/lean4-shimmer <LeanModule> [output.c]
+Here is a sample `lakefile.lean` for a project that produces a static 
+and a shared library named `MyLib` (see `.lake/build/lib/libMyLib.a` and
+`.lake/build/lib/libMyLib.dylib` or `.so` or `.dll`).
+
+```lean
+import Lake
+open System Lake DSL
+
+package mypackage
+
+require shimmer from git "https://github.com/ydewit/lean4-shimmer.git"
+
+module_data shim.c.o.export : FilePath
+module_data shim.c.o.noexport : FilePath
+
+@[default_target]
+lean_lib MyLib where
+  precompileModules := true
+  defaultFacets := #[LeanLib.staticFacet, LeanLib.sharedFacet]
+  nativeFacets := fun shouldExport =>
+    if shouldExport then
+      #[Module.oExportFacet, `module.shim.c.o.export]
+    else
+      #[Module.oNoExportFacet, `module.shim.c.o.noexport]
 ```
-
-- `<LeanModule>`: The Lean module to scan for exports (e.g., `My.Module`).
-- `[output.c]`: (Optional) Output file for the generated C shim.
-
-If no output file is specified, the shim is printed to stdout.
 
 ## Status
 
