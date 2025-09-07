@@ -1,0 +1,35 @@
+# Lake build artifacts
+.lake/
+build/
+
+# Lean build artifacts
+*.olean
+*.ilean
+*.c
+*.o
+
+# Editor files
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# System files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+
+# Lake package manager
+lake-packages/
+
+# Documentation build
+docs/
+
+# Test artifacts
+test-results/
