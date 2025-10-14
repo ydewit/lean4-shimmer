@@ -72,12 +72,13 @@ This helper funtion is used to build `shim.c.o` files from
     else
       fetch (mod.facet `shim.c)
 
-  let mut weakArgs := #["-I", (← getLeanIncludeDir).toString]
-  weakArgs := weakArgs ++ #["-I", mod.pkg.srcDir.toString]
-  weakArgs := weakArgs ++ mod.weakLeancArgs
+  -- compute weakLeancArgs
+  let weakLeancArgs := mod.weakLeancArgs ++ mod.pkg.weakLeancArgs
 
-  let leancArgs := if shouldExport then mod.leancArgs.push "-DLEAN_EXPORTING" else mod.leancArgs
-  buildO oFile cJob weakArgs leancArgs
+  -- compute leancArgs: include src folder for .h's
+  let leancArgs := mod.leancArgs ++ mod.pkg.moreLeancArgs ++ #["-I", mod.pkg.srcDir.toString]
+  let leancArgs := if shouldExport then leancArgs.push "-DLEAN_EXPORTING" else leancArgs
+  buildO oFile cJob weakLeancArgs leancArgs
 
 /--
 These two `module_facet`s enables other Lean projects to compile the `shim.c` files.
