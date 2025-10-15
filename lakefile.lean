@@ -73,7 +73,7 @@ This helper funtion is used to build `shim.c.o` files from
       fetch (mod.facet `shim.c)
 
   -- compute weakLeancArgs
-  let weakLeancArgs := mod.weakLeancArgs ++ mod.pkg.weakLeancArgs
+  let weakLeancArgs := mod.weakLeancArgs ++ mod.pkg.weakLeancArgs ++ #["-I", (← getLeanIncludeDir).toString]
 
   -- compute leancArgs: include src folder for .h's
   let leancArgs := mod.leancArgs ++ mod.pkg.moreLeancArgs ++ #["-I", mod.pkg.srcDir.toString]
